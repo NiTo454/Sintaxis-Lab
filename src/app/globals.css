@@ -1,18 +1,20 @@
 @import "tailwindcss";
 
 @theme {
-  /* Colores oficiales de Sintaxis Lab */
   --color-fucsia-lab: #E61C8C;
   --color-violeta-lab: #A3249E;
   --color-naranja-lab: #FF5C33;
   --color-negro-lab: #000000;
 
-  /* Animación de brillo personalizada */
-  --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-sans: 'Inter', sans-serif;
 }
 
 :root {
-  background: var(--color-negro-lab);
+  background-color: var(--color-negro-lab);
   color: white;
-  font-family: 'Inter', sans-serif;
+  /* Rejilla sutil de fondo */
+  background-image:
+    radial-gradient(circle at 2px 2px, rgba(230, 28, 140, 0.05) 1px, transparent 0);
+  background-size: 32px 32px;
 }
