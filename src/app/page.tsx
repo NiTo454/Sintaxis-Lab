@@ -1,27 +1,43 @@
+"use client";
+import { useState, useEffect } from "react";
+import { AnimatePresence } from "framer-motion";
+import TerminalLoader from "@/components/TerminalLoader"; // Asegúrate de que la ruta sea correcta
 import Navbar from "@/components/Navbar";
 import Hero from "@/sections/Hero";
-import GlassCard from "@/components/iu/GlassCard";
+import Services from "@/sections/Services";
+import Stack from "@/sections/Stack";
+import Projects from "@/sections/Projects";
+import Contact from "@/sections/Contact";
 
 export default function Home() {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // El tiempo que durará la "secuencia de arranque" (3 segundos es ideal)
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <>
-      <Navbar />
-      <main>
-        <Hero />
+      {/* El AnimatePresence detecta cuando el loader desaparece para animarlo */}
+      <AnimatePresence mode="wait">
+        {loading && <TerminalLoader key="loader" />}
+      </AnimatePresence>
 
-        {/* Ejemplo rápido de sección de servicios */}
-        <section id="servicios" className="py-20 px-6 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-          <GlassCard title="Web Design">
-            Desarrollo de interfaces modernas con React, Next.js y Tailwind CSS.
-          </GlassCard>
-          <GlassCard title="IT Support">
-            Mantenimiento preventivo y correctivo de hardware y redes.
-          </GlassCard>
-          <GlassCard title="Custom Systems">
-            Sistemas a medida en Node.js, PHP y bases de datos MySQL.
-          </GlassCard>
-        </section>
+      <Navbar />
+      <main className="relative">
+        <Hero />
+        <Services />
+        <Stack />
+        <Projects />
+        <Contact />
       </main>
+
+      {/* Si ya crearon el Footer, pueden añadirlo aquí abajo */}
     </>
   );
 }
