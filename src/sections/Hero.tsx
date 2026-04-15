@@ -1,6 +1,7 @@
 "use client";
 import { motion, Variants } from "framer-motion";
 import NeonButton from "@/components/iu/NeonButton";
+import Link from "next/link";
 
 export default function Hero() {
   const containerVariants: Variants = {
@@ -51,6 +52,9 @@ export default function Hero() {
         <motion.div variants={itemVariants} className="flex flex-wrap justify-center gap-4">
           <NeonButton text="Iniciar Proyecto" />
           <NeonButton text="Ver Bitácora" variant="naranja" />
+          <Link href="/pagina_facebook">
+            <NeonButton text="Redes y Enlaces" />
+          </Link>
         </motion.div>
       </motion.div>
     </section>
