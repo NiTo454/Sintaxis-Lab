@@ -26,11 +26,10 @@ export default function Navbar() {
           ========================================= */}
       <div className="hidden md:flex gap-10 font-sans font-semibold text-sm text-zinc-300 items-center uppercase tracking-widest">
         <div className="relative">
-          <button 
+          <button
             onClick={() => setMenuServiciosAbierto(!menuServiciosAbierto)}
-            className="px-5 py-2 rounded-full hover:bg-[#E61C8C]/10 hover:text-[#FF5C33] hover:shadow-[0_0_15px_rgba(230,28,140,0.2)] transition-all focus:outline-none flex items-center gap-2"
-          >
-            Servicios
+            className="px-5 py-2 rounded-full hover:bg-[#E61C8C]/10 hover:text-[#FF5C33] hover:shadow-[0_0_15px_rgba(230,28,140,0.2)] transition-all focus:outline-none flex items-center gap-2 font-sans font-semibold text-sm uppercase tracking-widest"
+          >            Servicios
             <span className={`text-[10px] transition-transform duration-300 ${menuServiciosAbierto ? 'rotate-180 text-[#FF5C33]' : ''}`}>
               ▼
             </span>
