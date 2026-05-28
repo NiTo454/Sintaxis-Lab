@@ -4,9 +4,20 @@ import { useEffect, useState } from "react";
 
 export default function TerminalLoader() {
   const [text, setText] = useState("");
+  const [showLoader, setShowLoader] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
   const fullText = "> RUNNING_SINTAXIS_LAB_BOOT_SEQUENCE...";
 
   useEffect(() => {
+    setIsMounted(true);
+    const hasSeenLoader = sessionStorage.getItem("hasSeenLoader");
+
+    if (hasSeenLoader) {
+      setShowLoader(false);
+      return;
+    }
+    sessionStorage.setItem("hasSeenLoader", "true");
+
     let i = 0;
     const interval = setInterval(() => {
       setText(fullText.slice(0, i));
@@ -15,6 +26,9 @@ export default function TerminalLoader() {
     }, 40); // Velocidad de escritura
     return () => clearInterval(interval);
   }, []);
+
+  // Evitamos errores de hidratación y ocultamos el componente si ya se vio
+  if (isMounted && !showLoader) return null;
 
   return (
     <motion.div

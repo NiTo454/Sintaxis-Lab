@@ -8,6 +8,9 @@ import Services from "@/sections/Services";
 import Stack from "@/sections/Stack";
 import Projects from "@/sections/Projects";
 import Contact from "@/sections/Contact";
+import PaginasWeb from "@/components/servicios/paginas.web";
+import ReparacionPC from "@/components/servicios/reparacion.pc";
+import Publicidad from "@/components/servicios/publicidad";
 
 export default function Home() {
   const [loading, setLoading] = useState(true);
@@ -32,6 +35,9 @@ export default function Home() {
       <main className="relative">
         <Hero />
         <Services />
+        <PaginasWeb />
+        <ReparacionPC />
+        <Publicidad />
         <Stack />
         <Projects />
         <Contact />
