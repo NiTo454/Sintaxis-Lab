@@ -1,6 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { AnimatePresence, motion } from "framer-motion";
 // Importamos los iconos para el menú de móvil
 import { Menu, X } from "lucide-react";
 
@@ -10,6 +11,18 @@ export default function Navbar() {
 
   // NUEVO: Estado para controlar todo el menú en teléfonos
   const [menuMovilAbierto, setMenuMovilAbierto] = useState(false);
+
+  // Bloquear el scroll del cuerpo cuando el menú móvil está abierto
+  useEffect(() => {
+    if (menuMovilAbierto) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuMovilAbierto]);
 
   return (
     <nav className="fixed top-0 w-full z-40 border-b border-[#A3249E]/30 bg-[#000000]/80 backdrop-blur-xl px-6 md:px-8 py-4 md:py-6 flex justify-between items-center transition-all">
@@ -36,19 +49,27 @@ export default function Navbar() {
             </span>
           </button>
 
-          {menuServiciosAbierto && (
-            <div className="absolute top-full left-0 mt-6 w-64 bg-[#000000]/95 backdrop-blur-2xl border border-[#FF5C33]/30 rounded-2xl shadow-[0_15px_40px_rgba(255,92,51,0.15)] overflow-hidden flex flex-col z-50 transition-all">
-              <Link href="/#desarrollo-web" className="px-6 py-4 hover:bg-gradient-to-r hover:from-[#E61C8C]/20 hover:to-transparent hover:text-white hover:pl-8 transition-all duration-300 border-b border-white/5" onClick={() => setMenuServiciosAbierto(false)}>
-                Páginas web
-              </Link>
-              <Link href="/#reparacion-pc" className="px-6 py-4 hover:bg-gradient-to-r hover:from-[#A3249E]/20 hover:to-transparent hover:text-white hover:pl-8 transition-all duration-300 border-b border-white/5" onClick={() => setMenuServiciosAbierto(false)}>
-                Reparación de PC
-              </Link>
-              <Link href="/#publicidad" className="px-6 py-4 hover:bg-gradient-to-r hover:from-[#FF5C33]/20 hover:to-transparent hover:text-white hover:pl-8 transition-all duration-300" onClick={() => setMenuServiciosAbierto(false)}>
-                Publicidad e impresión
-              </Link>
-            </div>
-          )}
+          <AnimatePresence>
+            {menuServiciosAbierto && (
+              <motion.div
+                initial={{ opacity: 0, y: 15, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 15, scale: 0.95 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                className="absolute top-full left-0 mt-6 w-64 bg-[#000000]/95 backdrop-blur-2xl border border-[#FF5C33]/30 rounded-2xl shadow-[0_15px_40px_rgba(255,92,51,0.15)] overflow-hidden flex flex-col z-50"
+              >
+                <Link href="/#desarrollo-web" className="px-6 py-4 hover:bg-gradient-to-r hover:from-[#E61C8C]/20 hover:to-transparent hover:text-white hover:pl-8 transition-all duration-300 border-b border-white/5" onClick={() => setMenuServiciosAbierto(false)}>
+                  Páginas web
+                </Link>
+                <Link href="/#reparacion-pc" className="px-6 py-4 hover:bg-gradient-to-r hover:from-[#A3249E]/20 hover:to-transparent hover:text-white hover:pl-8 transition-all duration-300 border-b border-white/5" onClick={() => setMenuServiciosAbierto(false)}>
+                  Reparación de PC
+                </Link>
+                <Link href="/#publicidad" className="px-6 py-4 hover:bg-gradient-to-r hover:from-[#FF5C33]/20 hover:to-transparent hover:text-white hover:pl-8 transition-all duration-300" onClick={() => setMenuServiciosAbierto(false)}>
+                  Publicidad e impresión
+                </Link>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         <Link href="/#proyectos" className="hover:text-[#E61C8C] transition-colors">
@@ -76,40 +97,47 @@ export default function Navbar() {
       {/* =========================================
           MENÚ DESPLEGABLE MÓVIL
           ========================================= */}
-      {menuMovilAbierto && (
-        <div className="absolute top-full left-0 w-full bg-[#000000]/95 backdrop-blur-2xl border-b border-[#A3249E]/30 flex flex-col md:hidden z-50 shadow-[0_15px_40px_rgba(230,28,140,0.1)]">
+      <AnimatePresence>
+        {menuMovilAbierto && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="absolute top-full left-0 w-full bg-[#000000]/95 backdrop-blur-2xl border-b border-[#A3249E]/30 flex flex-col md:hidden z-50 shadow-[0_15px_40px_rgba(230,28,140,0.1)] overflow-hidden"
+          >
+            {/* Título de sección para el móvil */}
+            <div className="px-6 py-4 text-xs font-bold text-[#A3249E] uppercase tracking-widest border-b border-white/5">
+              Nuestros Servicios
+            </div>
 
-          {/* Título de sección para el móvil */}
-          <div className="px-6 py-4 text-xs font-bold text-[#A3249E] uppercase tracking-widest border-b border-white/5">
-            Nuestros Servicios
-          </div>
+            <Link href="/#desarrollo-web" className="px-8 py-4 text-zinc-300 hover:text-[#FF5C33] hover:bg-white/5 transition-colors border-b border-white/5" onClick={() => setMenuMovilAbierto(false)}>
+              Páginas web
+            </Link>
+            <Link href="/#reparacion-pc" className="px-8 py-4 text-zinc-300 hover:text-[#FF5C33] hover:bg-white/5 transition-colors border-b border-white/5" onClick={() => setMenuMovilAbierto(false)}>
+              Reparación de PC
+            </Link>
+            <Link href="/#publicidad" className="px-8 py-4 text-zinc-300 hover:text-[#FF5C33] hover:bg-white/5 transition-colors border-b border-white/5" onClick={() => setMenuMovilAbierto(false)}>
+              Publicidad e impresión
+            </Link>
 
-          <Link href="/#desarrollo-web" className="px-8 py-4 text-zinc-300 hover:text-[#FF5C33] hover:bg-white/5 transition-colors border-b border-white/5" onClick={() => setMenuMovilAbierto(false)}>
-            Páginas web
-          </Link>
-          <Link href="/#reparacion-pc" className="px-8 py-4 text-zinc-300 hover:text-[#FF5C33] hover:bg-white/5 transition-colors border-b border-white/5" onClick={() => setMenuMovilAbierto(false)}>
-            Reparación de PC
-          </Link>
-          <Link href="/#publicidad" className="px-8 py-4 text-zinc-300 hover:text-[#FF5C33] hover:bg-white/5 transition-colors border-b border-white/5" onClick={() => setMenuMovilAbierto(false)}>
-            Publicidad e impresión
-          </Link>
+            <Link href="/#proyectos" className="px-8 py-4 text-zinc-300 hover:text-[#E61C8C] hover:bg-white/5 transition-colors border-b border-white/5" onClick={() => setMenuMovilAbierto(false)}>
+              Proyectos
+            </Link>
+            <Link href="/#enlaces" className="px-8 py-4 text-zinc-300 hover:text-[#A3249E] hover:bg-white/5 transition-colors border-b border-white/5" onClick={() => setMenuMovilAbierto(false)}>
+              Redes y Enlaces
+            </Link>
 
-          <Link href="/#proyectos" className="px-8 py-4 text-zinc-300 hover:text-[#E61C8C] hover:bg-white/5 transition-colors border-b border-white/5" onClick={() => setMenuMovilAbierto(false)}>
-            Proyectos
-          </Link>
-          <Link href="/#enlaces" className="px-8 py-4 text-zinc-300 hover:text-[#A3249E] hover:bg-white/5 transition-colors border-b border-white/5" onClick={() => setMenuMovilAbierto(false)}>
-            Redes y Enlaces
-          </Link>
-
-          {/* Título de sección de contacto */}
-          <div className="px-6 py-4 text-xs font-bold text-[#FF5C33] uppercase tracking-widest border-b border-white/5 mt-2">
-            Hablemos
-          </div>
-          <Link href="/#contacto" className="px-8 py-4 text-white font-bold hover:bg-white/5 transition-colors" onClick={() => setMenuMovilAbierto(false)}>
-            Contacto
-          </Link>
-        </div>
-      )}
+            {/* Título de sección de contacto */}
+            <div className="px-6 py-4 text-xs font-bold text-[#FF5C33] uppercase tracking-widest border-b border-white/5 mt-2">
+              Hablemos
+            </div>
+            <Link href="/#contacto" className="px-8 py-4 text-white font-bold hover:bg-white/5 transition-colors" onClick={() => setMenuMovilAbierto(false)}>
+              Contacto
+            </Link>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }

@@ -6,8 +6,8 @@
   --color-naranja-lab: #FF5C33;
   --color-negro-lab: #000000;
 
-  --font-mono: 'JetBrains Mono', monospace;
-  --font-sans: 'Inter', sans-serif;
+  --font-mono: var(--font-mono);
+  --font-sans: var(--font-sans);
 }
 
 :root {

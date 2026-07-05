@@ -1,9 +1,50 @@
 "use client";
+import { useState, useEffect } from "react";
 import { motion, Variants } from "framer-motion";
 import Link from "next/link";
 import NeonButton from "@/components/iu/NeonButton";
 
 export default function Hero() {
+  const words = [
+    "Impulsamos tu negocio con soluciones tecnológicas y creativas.",
+    "Desarrollamos páginas web profesionales a tu medida.",
+    "Reparamos y optimizamos tu computadora o laptop.",
+    "Diseñamos e imprimimos publicidad para tu marca."
+  ];
+
+  const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const [currentText, setCurrentText] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    const fullText = words[currentWordIndex];
+    
+    // Velocidad de escritura (60ms) / borrado (30ms)
+    const speed = isDeleting ? 30 : 60;
+
+    const handleType = () => {
+      if (!isDeleting) {
+        setCurrentText(fullText.slice(0, currentText.length + 1));
+        if (currentText.length === fullText.length) {
+          // Pausa al terminar de escribir antes de borrar
+          timer = setTimeout(() => setIsDeleting(true), 2500);
+          return;
+        }
+      } else {
+        setCurrentText(fullText.slice(0, currentText.length - 1));
+        if (currentText.length === 0) {
+          setIsDeleting(false);
+          setCurrentWordIndex((prev) => (prev + 1) % words.length);
+          return;
+        }
+      }
+      timer = setTimeout(handleType, speed);
+    };
+
+    timer = setTimeout(handleType, speed);
+    return () => clearTimeout(timer);
+  }, [currentText, isDeleting, currentWordIndex]);
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
@@ -44,8 +85,9 @@ export default function Hero() {
         </motion.h1>
 
         <motion.div variants={itemVariants} className="max-w-2xl mx-auto mb-10 font-mono">
-          <p className="text-zinc-400 text-sm md:text-base mb-4">
-            // Impulsamos tu negocio con soluciones tecnológicas y creativas.
+          <p className="text-zinc-400 text-sm md:text-base mb-4 min-h-[48px] md:min-h-[28px] flex items-center justify-center gap-1">
+            <span>// {currentText}</span>
+            <span className="w-1.5 h-4 bg-[#FF5C33] animate-pulse shrink-0 inline-block shadow-[0_0_8px_#FF5C33]" />
           </p>
           <div className="flex flex-wrap justify-center gap-3 text-xs md:text-sm text-zinc-500">
             <span className="bg-white/5 border border-white/10 px-3 py-1 rounded-md">DESARROLLO_WEB</span>

@@ -4,12 +4,7 @@ import { ChevronRight } from "lucide-react";
 import { allLinksPageLinks } from "@/sections/socials";
 
 export default function Links() {
-  const links = allLinksPageLinks.map(link => ({
-    ...link,
-    borderColor: `group-hover:border-[${link.colorHex}]/50`,
-    bgLight: `group-hover:bg-[${link.colorHex}]/10`,
-    shadow: `hover:shadow-[0_0_20px_rgba(${link.rgbColor},0.2)]`
-  }));
+  const links = allLinksPageLinks;
 
   return (
     <section id="enlaces" className="py-16 md:py-24 px-4 sm:px-6 max-w-4xl mx-auto flex flex-col items-center">
@@ -42,12 +37,19 @@ export default function Links() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: i * 0.1, type: "spring", stiffness: 300, damping: 20 }}
-            whileHover={{ scale: 1.02 }}
+            whileHover={{ 
+              scale: 1.02,
+              borderColor: `${link.colorHex}80`,
+              boxShadow: `0 0 20px rgba(${link.rgbColor}, 0.2)`
+            }}
             whileTap={{ scale: 0.98 }}
-            className={`group relative flex items-center justify-between bg-zinc-900/50 backdrop-blur-md border border-white/10 p-4 rounded-2xl transition-all duration-300 overflow-hidden ${link.borderColor} ${link.shadow}`}
+            className="group relative flex items-center justify-between bg-zinc-900/50 backdrop-blur-md border border-white/10 p-4 rounded-2xl transition-all duration-300 overflow-hidden"
           >
             {/* Fondo hover sutil */}
-            <div className={`absolute inset-0 opacity-0 transition-opacity duration-300 ${link.bgLight}`} />
+            <div 
+              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+              style={{ backgroundColor: `rgba(${link.rgbColor}, 0.1)` }}
+            />
 
             <div className="flex items-center gap-4 z-10">
               <div className={`w-12 h-12 rounded-xl bg-black/50 border border-white/5 flex items-center justify-center transition-colors duration-300 group-hover:bg-black/80`}>

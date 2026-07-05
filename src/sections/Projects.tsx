@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { ExternalLink, FolderCode } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -11,6 +12,7 @@ interface Project {
 }
 
 export default function Projects() {
+  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
   const projects: Project[] = [
     {
       title: "Sistema de Control Escolar",
@@ -60,14 +62,57 @@ export default function Projects() {
             className="group relative bg-zinc-900/50 border border-white/5 rounded-2xl overflow-hidden hover:border-fucsia-lab/40 hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(230,28,140,0.1)] transition-all duration-300 flex flex-col"
           >
             {/* Imagen generada automáticamente por API o imagen local */}
-            <div className="h-48 bg-zinc-800 relative flex items-center justify-center border-b border-white/5 overflow-hidden">
-              <img
-                src={project.image || `https://s0.wordpress.com/mshots/v1/${encodeURIComponent(project.link)}?w=1280&h=720`}
-                alt={`Previsualización de ${project.title}`}
-                className="w-full h-full object-cover object-top opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
-              />
-              {/* Capa de difuminado inferior para que la transición con el texto se vea bien */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
+            <div className="h-48 bg-zinc-950 relative flex items-center justify-center border-b border-white/5 overflow-hidden">
+              {!imageErrors[project.title] ? (
+                <>
+                  <img
+                    src={project.image || `https://s0.wordpress.com/mshots/v1/${encodeURIComponent(project.link)}?w=1280&h=720`}
+                    alt={`Previsualización de ${project.title}`}
+                    onError={() => {
+                      setImageErrors(prev => ({ ...prev, [project.title]: true }));
+                    }}
+                    className="w-full h-full object-cover object-top opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+                  />
+                  {/* Capa de difuminado inferior para que la transición con el texto se vea bien */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
+                </>
+              ) : (
+                /* Fallback de terminal Cyberpunk */
+                <div className="w-full h-full bg-[#050505] flex flex-col p-5 justify-between font-mono relative overflow-hidden group-hover:bg-[#0a0a0a] transition-all duration-500">
+                  {/* Pestaña de terminal */}
+                  <div className="flex justify-between items-center text-[10px] text-zinc-600 border-b border-white/5 pb-2">
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-2 h-2 rounded-full bg-[#E61C8C]/50" />
+                      <span>TERMINAL_PREVIEW // {project.title.toLowerCase().replace(/\s+/g, "-")}.sh</span>
+                    </div>
+                    <span className="text-[#FF5C33] font-bold text-[8px] animate-pulse">● LIVE</span>
+                  </div>
+
+                  {/* Cuerpo de la terminal */}
+                  <div className="flex flex-col gap-1 items-start text-left mt-2 z-10">
+                    <div className="flex items-center gap-1">
+                      <span className="text-[#E61C8C]">$</span>
+                      <span className="text-zinc-400 text-[11px]">cat info.cfg</span>
+                    </div>
+                    <div className="pl-3 border-l border-[#A3249E]/30 space-y-0.5 text-[10px] text-zinc-500">
+                      <p><span className="text-zinc-400">PROYECTO:</span> {project.title.toUpperCase()}</p>
+                      <p><span className="text-zinc-400">STATUS:</span> OPERACIONAL</p>
+                      <p><span className="text-zinc-400">TAGS:</span> {project.tags.join(" | ")}</p>
+                    </div>
+                  </div>
+
+                  {/* Comando final simulado */}
+                  <div className="text-[10px] text-left text-zinc-700 font-bold z-10 flex items-center gap-1">
+                    <span className="text-[#FF5C33]">&gt;</span>
+                    <span>READY_FOR_EXECUTION</span>
+                    <span className="w-1.5 h-3.5 bg-fucsia-lab/60 animate-pulse ml-0.5" />
+                  </div>
+
+                  {/* Resplandores abstractos */}
+                  <div className="absolute -bottom-8 -right-8 w-24 h-24 rounded-full bg-[#E61C8C]/5 blur-xl pointer-events-none group-hover:bg-[#E61C8C]/15 transition-all duration-500" />
+                  <div className="absolute -top-8 -left-8 w-24 h-24 rounded-full bg-[#FF5C33]/5 blur-xl pointer-events-none group-hover:bg-[#FF5C33]/10 transition-all duration-500" />
+                </div>
+              )}
             </div>
 
             <div className="p-6 flex flex-col flex-grow">

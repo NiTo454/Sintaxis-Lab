@@ -3,7 +3,12 @@ import GlassCard from "@/components/iu/GlassCard";
 import { Monitor, Wrench, Palette, Check } from "lucide-react";
 import { motion } from "framer-motion";
 
-export default function Services() {
+interface ServicesProps {
+  activeTab: number;
+  setActiveTab: (index: number) => void;
+}
+
+export default function Services({ activeTab, setActiveTab }: ServicesProps) {
   const services = [
     {
       title: "Páginas Web",
@@ -22,7 +27,6 @@ export default function Services() {
     {
       title: "Publicidad e Impresión",
       desc: "Diseñamos e imprimimos todo lo que necesites para promocionar tu negocio o para un regalo especial.",
-      // Aquí metemos toda la lista organizada por grupos
       puntos: [
         "Lonas y Tarjetas",
         "Playeras y Sudaderas",
@@ -45,33 +49,57 @@ export default function Services() {
       </motion.h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-        {services.map((s, i) => (
-          <motion.div
-            key={s.title}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: i * 0.15 }}
-            className="h-full"
-          >
-            <GlassCard title={s.title} className="h-full flex flex-col">
-              <s.icon className={`mb-4 ${s.color}`} size={32} />
-              <p className="text-zinc-400 text-sm md:text-base mb-6 leading-relaxed">
-                {s.desc}
-              </p>
+        {services.map((s, i) => {
+          const isActive = activeTab === i;
 
-              {/* Lista de cosas que incluye cada servicio */}
-              <ul className="mt-auto space-y-2 border-t border-white/5 pt-4">
-                {s.puntos.map((punto) => (
-                  <li key={punto} className="flex items-start gap-2 text-xs font-mono text-zinc-500">
-                    <Check size={14} className="text-fucsia-lab shrink-0 mt-[2px]" />
-                    <span className="leading-tight">{punto.toUpperCase()}</span>
-                  </li>
-                ))}
-              </ul>
-            </GlassCard>
-          </motion.div>
-        ))}
+          const handleCardClick = () => {
+            setActiveTab(i);
+            const hashes = ["#desarrollo-web", "#reparacion-pc", "#publicidad"];
+            window.location.hash = hashes[i];
+
+            // Scroll suave hacia la sección de detalle activa
+            const element = document.getElementById(hashes[i].substring(1));
+            if (element) {
+              element.scrollIntoView({ behavior: "smooth" });
+            }
+          };
+
+          return (
+            <motion.div
+              key={s.title}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: i * 0.15 }}
+              onClick={handleCardClick}
+              className="h-full cursor-pointer"
+            >
+              <GlassCard 
+                title={s.title} 
+                className={`h-full flex flex-col transition-all duration-300 ${
+                  isActive 
+                    ? "border-fucsia-lab bg-zinc-900/60 shadow-[0_0_25px_rgba(230,28,140,0.15)] scale-[1.02]" 
+                    : "hover:border-[#E61C8C]/40 hover:bg-white/10"
+                }`}
+              >
+                <s.icon className={`mb-4 ${s.color}`} size={32} />
+                <p className="text-zinc-400 text-sm md:text-base mb-6 leading-relaxed">
+                  {s.desc}
+                </p>
+
+                {/* Lista de cosas que incluye cada servicio */}
+                <ul className="mt-auto space-y-2 border-t border-white/5 pt-4">
+                  {s.puntos.map((punto) => (
+                    <li key={punto} className="flex items-start gap-2 text-xs font-mono text-zinc-500">
+                      <Check size={14} className="text-fucsia-lab shrink-0 mt-[2px]" />
+                      <span className="leading-tight">{punto.toUpperCase()}</span>
+                    </li>
+                  ))}
+                </ul>
+              </GlassCard>
+            </motion.div>
+          );
+        })}
       </div>
     </section>
   );
