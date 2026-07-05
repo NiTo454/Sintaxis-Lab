@@ -5,6 +5,7 @@ import Footer from "@/components/Footer"; // Importamos el Footer
 import ScrollProgress from "@/components/ScrollProgress";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import CommandPalette from "@/components/CommandPalette";
+import CodeParticlesWrapper from "@/components/CodeParticlesWrapper";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const jetbrains = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
@@ -18,10 +19,13 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es" className={`${inter.variable} ${jetbrains.variable} scroll-smooth`}>
-      <body className="antialiased selection:bg-fucsia-lab selection:text-white bg-black">
+      <body className="antialiased selection:bg-fucsia-lab selection:text-white bg-transparent">
         <ScrollProgress />
         {/* El Navbar va arriba de todo */}
         <Navbar />
+
+        {/* Fondo dinámico global de partículas de código */}
+        <CodeParticlesWrapper />
 
         {/* El contenedor principal para el contenido de tus páginas */}
         <main className="min-h-screen">
