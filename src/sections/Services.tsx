@@ -2,6 +2,7 @@
 import GlassCard from "@/components/iu/GlassCard";
 import { Monitor, Wrench, Palette, Check } from "lucide-react";
 import { motion } from "framer-motion";
+import ScrambleText from "@/components/ScrambleText";
 
 interface ServicesProps {
   activeTab: number;
@@ -45,7 +46,7 @@ export default function Services({ activeTab, setActiveTab }: ServicesProps) {
         viewport={{ once: true }}
         className="text-2xl md:text-3xl font-black font-mono mb-8 md:mb-12 italic tracking-tighter"
       >
-        01. NUESTROS_SERVICIOS
+        <ScrambleText text="01. NUESTROS_SERVICIOS" />
       </motion.h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">

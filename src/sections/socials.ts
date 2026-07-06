@@ -10,6 +10,7 @@ export interface SocialLink {
   color: string; // Clase de color de texto para Tailwind
   colorHex: string; // Valor hexadecimal para construir otros estilos
   rgbColor: string; // "r, g, b"
+  description: string; // Descripción breve para la sección de enlaces
 }
 
 const socialLinks: Record<SocialLink['id'], SocialLink> = {
@@ -23,6 +24,7 @@ const socialLinks: Record<SocialLink['id'], SocialLink> = {
     color: "text-[#1877F2]",
     colorHex: "#1877F2",
     rgbColor: "24, 119, 242",
+    description: "Nuestra comunidad, novedades y actualizaciones",
   },
   whatsapp: {
     id: 'whatsapp',
@@ -34,6 +36,7 @@ const socialLinks: Record<SocialLink['id'], SocialLink> = {
     color: "text-[#25D366]",
     colorHex: "#25D366",
     rgbColor: "37, 211, 102",
+    description: "Atención personalizada y cotizaciones inmediatas",
   },
   messenger: {
     id: 'messenger',
@@ -45,17 +48,19 @@ const socialLinks: Record<SocialLink['id'], SocialLink> = {
     color: "text-[#00B2FF]",
     colorHex: "#00B2FF",
     rgbColor: "0, 178, 255",
+    description: "Respuesta directa y consultas rápidas",
   },
   website: {
     id: 'website',
     name: "Sitio Web",
     shortName: "SITIO WEB",
     actionText: "Explora nuestro",
-    url: "/",
+    url: "https://mi-web-bay.vercel.app/",
     icon: Globe,
     color: "text-fucsia-lab",
     colorHex: "#e61c8c", // Asumo que fucsia-lab es rgb(230, 28, 140)
     rgbColor: "230, 28, 140",
+    description: "Nuestros servicios, portafolio y plataformas web",
   },
   instagram: {
     id: 'instagram',
@@ -67,6 +72,7 @@ const socialLinks: Record<SocialLink['id'], SocialLink> = {
     color: "text-[#E1306C]",
     colorHex: "#E1306C",
     rgbColor: "225, 48, 108",
+    description: "Diseño, publicidad y contenido visual",
   }
 };
 

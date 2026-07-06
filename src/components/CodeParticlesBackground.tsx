@@ -1,11 +1,22 @@
 "use client";
 import { useEffect, useRef } from "react";
 
-// Símbolos y palabras clave para las partículas de código
+// Símbolos y fragmentos de código dinámicos para el fondo
 const CODE_SYMBOLS = [
-  "0", "1", "{", "}", "[", "]", "(", ")", ";", "=>", 
-  "const", "let", "fn", "async", "await", "import", "export", 
-  "map", "div", "tsx", "css", "api", "git", "db"
+  // Símbolos de código común
+  "{ }", "[ ]", "=>", "++", "&&", "||", "===", ";",
+  // Palabras clave y sentencias
+  "const", "async", "await", "import", "export", "interface", "npm run dev",
+  "useState(null)", "console.log('lab')", "git commit -m 'feat'",
+  "SELECT * FROM db", "return <Layout />", "window.open(url)",
+  "docker-compose up", "api.get('/services')", "new Promise((resolve) => {})",
+  "<AnimatePresence>", "systemctl restart nginx", "const handler = async () => {}",
+  "map((item) => item.id)", "npm install next", "class SintaxisLab extends React",
+  "const [data, setData] = useState()", "useEffect(() => {}, [])", "npm run build",
+  "git push origin main", "chmod +x script.sh", "curl -X POST https://api",
+  "db.users.findIndex()", "sudo systemctl status nginx", "cat .env.local",
+  "grep -rnw './src'", "docker ps -a", "ssh -i keys.pem root@server",
+  "ping -c 4 8.8.8.8", "kill -9 PID", "chmod 755 config.json"
 ];
 
 interface Particle {
@@ -36,8 +47,8 @@ export default function CodeParticlesBackground() {
     
     // Configuración adaptativa según el tamaño de pantalla
     let isMobile = false;
-    let maxDistance = 120; // Distancia máxima para dibujar líneas de conexión
-    let particleCount = 80;
+    let maxDistance = 105; // Distancia máxima para dibujar líneas de conexión
+    let particleCount = 140;
 
     const themeColors = [
       "rgba(230, 28, 140",  // Fucsia Lab (#E61C8C)
@@ -47,8 +58,8 @@ export default function CodeParticlesBackground() {
 
     const resizeCanvas = () => {
       isMobile = window.innerWidth < 768;
-      particleCount = isMobile ? 30 : 80;
-      maxDistance = isMobile ? 80 : 120;
+      particleCount = isMobile ? 55 : 140;
+      maxDistance = isMobile ? 70 : 105;
 
       const dpr = window.devicePixelRatio || 1;
       canvas.width = window.innerWidth * dpr;
@@ -66,17 +77,17 @@ export default function CodeParticlesBackground() {
     const initParticles = () => {
       particles = [];
       for (let i = 0; i < particleCount; i++) {
-        const isText = Math.random() > 0.4; // 60% son textos/símbolos, 40% puntos
+        const isText = Math.random() > 0.45; // 55% son textos/símbolos, 45% puntos
         const text = CODE_SYMBOLS[Math.floor(Math.random() * CODE_SYMBOLS.length)];
         const color = themeColors[Math.floor(Math.random() * themeColors.length)];
 
         particles.push({
           x: Math.random() * window.innerWidth,
           y: Math.random() * window.innerHeight,
-          vx: (Math.random() - 0.5) * 0.4, // Movimiento lento
-          vy: (Math.random() - 0.5) * 0.4,
-          size: isText ? Math.floor(Math.random() * 6) + 10 : Math.random() * 2 + 1, // Tamaño de letra o diámetro del punto
-          alpha: Math.random() * 0.35 + 0.1, // Opacidad base suave
+          vx: (Math.random() - 0.5) * 0.35, // Movimiento lento y elegante
+          vy: (Math.random() - 0.5) * 0.35,
+          size: isText ? Math.floor(Math.random() * 5) + 9 : Math.random() * 1.8 + 1, // Tamaño de fuente o diámetro del punto
+          alpha: Math.random() * 0.28 + 0.08, // Opacidad base ultra suave para no saturar
           text,
           isText,
           color
@@ -98,18 +109,18 @@ export default function CodeParticlesBackground() {
           const dist = Math.sqrt(dx * dx + dy * dy);
 
           if (dist < maxDistance) {
-            const alpha = (1 - dist / maxDistance) * 0.12; // Transición de línea muy sutil
+            const alpha = (1 - dist / maxDistance) * 0.1; // Transición de línea muy sutil
             ctx.beginPath();
             ctx.moveTo(p1.x, p1.y);
             ctx.lineTo(p2.x, p2.y);
             
-            // Usamos un gradiente entre las dos partículas para un look premium
+            // Gradiente entre las dos partículas
             const grad = ctx.createLinearGradient(p1.x, p1.y, p2.x, p2.y);
             grad.addColorStop(0, `${p1.color}, ${alpha})`);
             grad.addColorStop(1, `${p2.color}, ${alpha})`);
             
             ctx.strokeStyle = grad;
-            ctx.lineWidth = 0.5;
+            ctx.lineWidth = 0.45;
             ctx.stroke();
           }
         }
@@ -119,15 +130,15 @@ export default function CodeParticlesBackground() {
           const dx = p1.x - mouseRef.current.x;
           const dy = p1.y - mouseRef.current.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          const mouseMaxDist = isMobile ? 100 : 165;
+          const mouseMaxDist = isMobile ? 90 : 150;
 
           if (dist < mouseMaxDist) {
-            const alpha = (1 - dist / mouseMaxDist) * 0.18; // Más marcado cerca del mouse
+            const alpha = (1 - dist / mouseMaxDist) * 0.15; // Más marcado cerca del mouse
             ctx.beginPath();
             ctx.moveTo(p1.x, p1.y);
             ctx.lineTo(mouseRef.current.x, mouseRef.current.y);
             ctx.strokeStyle = `${p1.color}, ${alpha})`;
-            ctx.lineWidth = 0.6;
+            ctx.lineWidth = 0.5;
             ctx.stroke();
           }
         }
@@ -151,13 +162,12 @@ export default function CodeParticlesBackground() {
           const dx = p.x - mouseRef.current.x;
           const dy = p.y - mouseRef.current.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          const repelRadius = 130;
+          const repelRadius = 120;
 
           if (dist < repelRadius) {
-            // Fuerza proporcional a la cercanía
             const force = (repelRadius - dist) / repelRadius;
             const angle = Math.atan2(dy, dx);
-            const repelStrength = 0.5; // Ajustar sensibilidad
+            const repelStrength = 0.4;
 
             p.x += Math.cos(angle) * force * repelStrength;
             p.y += Math.sin(angle) * force * repelStrength;

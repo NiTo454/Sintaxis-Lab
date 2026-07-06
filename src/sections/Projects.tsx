@@ -1,8 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
-import { ExternalLink, FolderCode, Activity, RefreshCw } from "lucide-react";
-import { motion } from "framer-motion";
+import { ExternalLink, FolderCode, Activity, RefreshCw, ChevronDown } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { getProjects, VercelProjectData } from "@/app/actions/getProjects";
+import ScrambleText from "@/components/ScrambleText";
 
 interface Project {
   title: string;
@@ -87,11 +88,49 @@ function formatKebabCase(str: string): string {
     .join(" ");
 }
 
+const CATEGORIES = ["TODOS", "WEB_APPS", "DISEÑO", "SISTEMAS", "LIVE_VERCEL"];
+
+const matchesCategory = (project: Project, category: string) => {
+  if (category === "TODOS") return true;
+  if (category === "LIVE_VERCEL") return !!project.isDynamic;
+  
+  const cat = category.toLowerCase();
+  return project.tags.some(tag => {
+    const t = tag.toLowerCase();
+    if (cat === "web_apps") {
+      return ["web", "app", "landing", "next", "vite", "react", "seo", "transporte", "negocios", "rápido", "rapido"].some(w => t.includes(w));
+    }
+    if (cat === "diseño") {
+      return ["diseño", "diseno", "identidad", "portfolio", "catálogo", "catalogo"].some(w => t.includes(w));
+    }
+    if (cat === "sistemas") {
+      return ["sistemas", "seguridad", "qr", "control"].some(w => t.includes(w));
+    }
+    return false;
+  });
+};
+
+const getScreenshotUrl = (url: string) => {
+  return `https://api.microlink.io/?url=${encodeURIComponent(url)}&screenshot=true&embed=screenshot.url`;
+};
+
 export default function Projects() {
-  const [projectList, setProjectList] = useState<Project[]>(STATIC_PROJECTS);
+  const [projectList, setProjectList] = useState<Project[]>(
+    STATIC_PROJECTS.map(p => ({
+      ...p,
+      image: p.image || getScreenshotUrl(p.link)
+    }))
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [dataSource, setDataSource] = useState<"vercel" | "local">("local");
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
+  
+  const [selectedCategory, setSelectedCategory] = useState("TODOS");
+  const [showAll, setShowAll] = useState(false);
+
+  const filteredProjects = projectList.filter(project => matchesCategory(project, selectedCategory));
+  const INITIAL_COUNT = 6;
+  const displayedProjects = showAll ? filteredProjects : filteredProjects.slice(0, INITIAL_COUNT);
 
   useEffect(() => {
     async function loadProjects() {
@@ -105,7 +144,7 @@ export default function Projects() {
               desc: metadata?.desc || "Proyecto web desplegado automáticamente en la plataforma en la nube Vercel.",
               link: vp.url,
               tags: metadata?.tags || ["Web App", "Vercel", "Live"],
-              image: metadata?.image,
+              image: metadata?.image || getScreenshotUrl(vp.url),
               isDynamic: true,
               updatedAt: vp.updatedAt
             };
@@ -123,17 +162,26 @@ export default function Projects() {
               );
             });
             return !isAlreadyPresent;
-          });
+          }).map(sp => ({
+            ...sp,
+            image: sp.image || getScreenshotUrl(sp.link)
+          }));
 
           setProjectList([...vercelMapped, ...localOnly]);
           setDataSource("vercel");
         } else {
-          setProjectList(STATIC_PROJECTS);
+          setProjectList(STATIC_PROJECTS.map(sp => ({
+            ...sp,
+            image: sp.image || getScreenshotUrl(sp.link)
+          })));
           setDataSource("local");
         }
       } catch (e) {
         console.error("Error cargando proyectos dinámicos:", e);
-        setProjectList(STATIC_PROJECTS);
+        setProjectList(STATIC_PROJECTS.map(sp => ({
+          ...sp,
+          image: sp.image || getScreenshotUrl(sp.link)
+        })));
         setDataSource("local");
       } finally {
         setIsLoading(false);
@@ -194,7 +242,7 @@ export default function Projects() {
           viewport={{ once: true, margin: "-50px" }}
           className="text-3xl font-black font-mono mb-0 italic tracking-tighter"
         >
-          02. PROYECTOS_RECIENTES
+          <ScrambleText text="02. PROYECTOS_RECIENTES" />
         </motion.h2>
         
         <motion.div
@@ -207,101 +255,157 @@ export default function Projects() {
         </motion.div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {projectList.map((project, i) => (
-          <motion.article
-            key={project.title}
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ delay: i * 0.1 }}
-            className="group relative bg-zinc-900/50 border border-white/5 rounded-2xl overflow-hidden hover:border-fucsia-lab/40 hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(230,28,140,0.1)] transition-all duration-300 flex flex-col"
-          >
-            {/* Badge de estado en vivo para proyectos dinámicos */}
-            {project.isDynamic && (
-              <div className="absolute top-4 right-4 z-20 bg-zinc-950/85 border border-emerald-500/30 text-emerald-400 text-[9px] font-mono font-bold px-2 py-0.5 rounded-md flex items-center gap-1 backdrop-blur-sm shadow-[0_0_8px_rgba(16,185,129,0.1)]">
-                <span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
-                VERCEL_LIVE
-              </div>
-            )}
+      {/* Selector de Categorías */}
+      <div className="flex flex-wrap gap-2.5 mb-10 font-mono text-xs">
+        {CATEGORIES.map(category => {
+          const isActive = selectedCategory === category;
+          return (
+            <button
+              key={category}
+              onClick={() => {
+                setSelectedCategory(category);
+                setShowAll(false);
+              }}
+              className={`px-4 py-2 border rounded-full transition-all duration-300 cursor-pointer uppercase tracking-wider font-bold ${
+                isActive
+                  ? "bg-fucsia-lab/10 border-fucsia-lab text-white shadow-[0_0_12px_rgba(230,28,140,0.25)]"
+                  : "bg-white/5 border-white/5 text-zinc-400 hover:border-white/10 hover:text-white"
+              }`}
+            >
+              [{category}]
+            </button>
+          );
+        })}
+      </div>
 
-            {/* Imagen local o Fallback de terminal Cyberpunk si no hay imagen local */}
-            <div className="h-48 bg-zinc-950 relative flex items-center justify-center border-b border-white/5 overflow-hidden">
-              {project.image ? (
-                <>
-                  <img
-                    src={project.image}
-                    alt={`Previsualización de ${project.title}`}
-                    className="w-full h-full object-cover object-top opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
-                  />
-                  {/* Capa de difuminado inferior para que la transición con el texto se vea bien */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
-                </>
-              ) : (
-                /* Fallback de terminal Cyberpunk por defecto si no hay imagen local */
-                <div className="w-full h-full bg-[#050505] flex flex-col p-5 justify-between font-mono relative overflow-hidden group-hover:bg-[#0a0a0a] transition-all duration-500">
-                  {/* Pestaña de terminal */}
-                  <div className="flex justify-between items-center text-[10px] text-zinc-600 border-b border-white/5 pb-2">
-                    <div className="flex items-center gap-1.5">
-                      <div className="w-2 h-2 rounded-full bg-[#E61C8C]/50" />
-                      <span>TERMINAL_PREVIEW // {project.title.toLowerCase().replace(/\s+/g, "-")}.sh</span>
-                    </div>
-                    <span className="text-[#FF5C33] font-bold text-[8px] animate-pulse">● LIVE</span>
-                  </div>
-
-                  {/* Cuerpo de la terminal */}
-                  <div className="flex flex-col gap-1 items-start text-left mt-2 z-10">
-                    <div className="flex items-center gap-1">
-                      <span className="text-[#E61C8C]">$</span>
-                      <span className="text-zinc-400 text-[11px]">cat info.cfg</span>
-                    </div>
-                    <div className="pl-3 border-l border-[#A3249E]/30 space-y-0.5 text-[10px] text-zinc-500">
-                      <p><span className="text-zinc-400">PROYECTO:</span> {project.title.toUpperCase()}</p>
-                      <p><span className="text-zinc-400">STATUS:</span> OPERACIONAL</p>
-                      <p><span className="text-zinc-400">TAGS:</span> {project.tags.join(" | ")}</p>
-                    </div>
-                  </div>
-
-                  {/* Comando final simulado */}
-                  <div className="text-[10px] text-left text-zinc-700 font-bold z-10 flex items-center gap-1">
-                    <span className="text-[#FF5C33]">&gt;</span>
-                    <span>READY_FOR_EXECUTION</span>
-                    <span className="w-1.5 h-3.5 bg-fucsia-lab/60 animate-pulse ml-0.5" />
-                  </div>
-
-                  {/* Resplandores abstractos */}
-                  <div className="absolute -bottom-8 -right-8 w-24 h-24 rounded-full bg-[#E61C8C]/5 blur-xl pointer-events-none group-hover:bg-[#E61C8C]/15 transition-all duration-500" />
-                  <div className="absolute -top-8 -left-8 w-24 h-24 rounded-full bg-[#FF5C33]/5 blur-xl pointer-events-none group-hover:bg-[#FF5C33]/10 transition-all duration-500" />
+      <motion.div 
+        layout 
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+      >
+        <AnimatePresence mode="popLayout">
+          {displayedProjects.map((project, i) => (
+            <motion.article
+              layout
+              key={project.title}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
+              className="group relative bg-zinc-900/50 border border-white/5 rounded-2xl overflow-hidden hover:border-fucsia-lab/40 hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(230,28,140,0.1)] transition-all duration-300 flex flex-col"
+            >
+              {/* Badge de estado en vivo para proyectos dinámicos */}
+              {project.isDynamic && (
+                <div className="absolute top-4 right-4 z-20 bg-zinc-950/85 border border-emerald-500/30 text-emerald-400 text-[9px] font-mono font-bold px-2 py-0.5 rounded-md flex items-center gap-1 backdrop-blur-sm shadow-[0_0_8px_rgba(16,185,129,0.1)]">
+                  <span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
+                  VERCEL_LIVE
                 </div>
               )}
-            </div>
 
-            <div className="p-6 flex flex-col flex-grow">
-              <div className="flex gap-2 mb-4 flex-wrap">
-                {project.tags.map(tag => (
-                  <span key={tag} className="text-[10px] font-mono bg-white/5 px-2 py-1 rounded text-zinc-400 uppercase tracking-wider border border-white/5 group-hover:border-white/10 transition-colors">
-                    {tag}
-                  </span>
-                ))}
+              {/* Imagen local o Fallback de terminal Cyberpunk si no hay imagen local */}
+              <div className="h-48 bg-zinc-950 relative flex items-center justify-center border-b border-white/5 overflow-hidden">
+                {project.image && !imageErrors[project.title] ? (
+                  <>
+                    <img
+                      src={project.image}
+                      alt={`Previsualización de ${project.title}`}
+                      onError={() => {
+                        setImageErrors(prev => ({ ...prev, [project.title]: true }));
+                      }}
+                      className="w-full h-full object-cover object-top opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+                    />
+                    {/* Capa de difuminado inferior para que la transición con el texto se vea bien */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
+                  </>
+                ) : (
+                  /* Fallback de terminal Cyberpunk por defecto si no hay imagen local */
+                  <div className="w-full h-full bg-[#050505] flex flex-col p-5 justify-between font-mono relative overflow-hidden group-hover:bg-[#0a0a0a] transition-all duration-500 crt-effect">
+                    {/* Pestaña de terminal */}
+                    <div className="flex justify-between items-center text-[10px] text-zinc-600 border-b border-white/5 pb-2">
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-2 h-2 rounded-full bg-[#E61C8C]/50" />
+                        <span>TERMINAL_PREVIEW // {project.title.toLowerCase().replace(/\s+/g, "-")}.sh</span>
+                      </div>
+                      <span className="text-[#FF5C33] font-bold text-[8px] animate-pulse">● LIVE</span>
+                    </div>
+
+                    {/* Cuerpo de la terminal */}
+                    <div className="flex flex-col gap-1 items-start text-left mt-2 z-10">
+                      <div className="flex items-center gap-1">
+                        <span className="text-[#E61C8C]">$</span>
+                        <span className="text-zinc-400 text-[11px]">cat info.cfg</span>
+                      </div>
+                      <div className="pl-3 border-l border-[#A3249E]/30 space-y-0.5 text-[10px] text-zinc-500">
+                        <p><span className="text-zinc-400">PROYECTO:</span> {project.title.toUpperCase()}</p>
+                        <p><span className="text-zinc-400">STATUS:</span> OPERACIONAL</p>
+                        <p><span className="text-zinc-400">TAGS:</span> {project.tags.join(" | ")}</p>
+                      </div>
+                    </div>
+
+                    {/* Comando final simulado */}
+                    <div className="text-[10px] text-left text-zinc-700 font-bold z-10 flex items-center gap-1">
+                      <span className="text-[#FF5C33]">&gt;</span>
+                      <span>READY_FOR_EXECUTION</span>
+                      <span className="w-1.5 h-3.5 bg-fucsia-lab/60 animate-pulse ml-0.5" />
+                    </div>
+
+                    {/* Resplandores abstractos */}
+                    <div className="absolute -bottom-8 -right-8 w-24 h-24 rounded-full bg-[#E61C8C]/5 blur-xl pointer-events-none group-hover:bg-[#E61C8C]/15 transition-all duration-500" />
+                    <div className="absolute -top-8 -left-8 w-24 h-24 rounded-full bg-[#FF5C33]/5 blur-xl pointer-events-none group-hover:bg-[#FF5C33]/10 transition-all duration-500" />
+                  </div>
+                )}
               </div>
-              <h3 className="text-xl font-bold mb-2 group-hover:text-fucsia-lab transition-colors">{project.title}</h3>
-              <p className="text-zinc-500 text-sm mb-6 leading-relaxed">
-                {project.desc}
-              </p>
-              <div className="mt-auto pt-4 border-t border-white/5">
-                <a
-                  href={project.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-xs font-mono font-bold text-white hover:text-fucsia-lab transition-colors"
-                >
-                  PROBAR_DEMO <ExternalLink size={14} />
-                </a>
+
+              <div className="p-6 flex flex-col flex-grow">
+                <div className="flex gap-2 mb-4 flex-wrap">
+                  {project.tags.map(tag => (
+                    <span key={tag} className="text-[10px] font-mono bg-white/5 px-2 py-1 rounded text-zinc-400 uppercase tracking-wider border border-white/5 group-hover:border-white/10 transition-colors">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                <h3 className="text-xl font-bold mb-2 group-hover:text-fucsia-lab transition-colors">{project.title}</h3>
+                <p className="text-zinc-500 text-sm mb-6 leading-relaxed">
+                  {project.desc}
+                </p>
+                <div className="mt-auto pt-4 border-t border-white/5">
+                  <a
+                    href={project.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-xs font-mono font-bold text-white hover:text-fucsia-lab transition-colors"
+                  >
+                    PROBAR_DEMO <ExternalLink size={14} />
+                  </a>
+                </div>
               </div>
-            </div>
-          </motion.article>
-        ))}
-      </div>
+            </motion.article>
+          ))}
+        </AnimatePresence>
+      </motion.div>
+
+      {/* Botón Ver Más / Mostrar Menos */}
+      {filteredProjects.length > INITIAL_COUNT && (
+        <div className="flex justify-center mt-12">
+          <motion.button
+            whileHover={{ 
+              scale: 1.05,
+              boxShadow: "0 0 15px rgba(230, 28, 140, 0.4)" 
+            }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowAll(!showAll)}
+            className="px-6 py-2.5 border-2 border-fucsia-lab text-fucsia-lab rounded-lg font-mono font-bold uppercase tracking-tighter transition-all duration-300 flex items-center gap-2 cursor-pointer bg-transparent"
+          >
+            <span>{showAll ? "COLAPSAR_LISTA.sh" : "MOSTRAR_TODOS.sh"}</span>
+            <motion.span
+              animate={{ rotate: showAll ? 180 : 0 }}
+              transition={{ duration: 0.3 }}
+              className="flex items-center"
+            >
+              <ChevronDown size={14} />
+            </motion.span>
+          </motion.button>
+        </div>
+      )}
     </section>
   );
 }

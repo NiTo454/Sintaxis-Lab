@@ -41,6 +41,15 @@ export default function CommandPalette() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen]);
 
+  // Escuchar el evento personalizado para alternar la visibilidad de la consola
+  useEffect(() => {
+    const handleToggle = () => {
+      setIsOpen((prev) => !prev);
+    };
+    window.addEventListener("toggle-command-palette", handleToggle);
+    return () => window.removeEventListener("toggle-command-palette", handleToggle);
+  }, []);
+
   // Forzar foco en la caja de texto de comandos al abrirse
   useEffect(() => {
     if (isOpen) {
@@ -126,7 +135,7 @@ export default function CommandPalette() {
             initial={{ opacity: 0, scale: 0.95, y: -20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -20 }}
-            className="w-full max-w-xl bg-black border border-[#A3249E]/40 rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(163,36,158,0.2)] font-mono z-10"
+            className="w-full max-w-xl bg-black border border-[#A3249E]/40 rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(163,36,158,0.2)] font-mono z-10 crt-effect"
           >
             {/* Cabecera */}
             <div className="bg-zinc-950 px-4 py-3 flex items-center justify-between border-b border-zinc-900 select-none">

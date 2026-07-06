@@ -12,6 +12,10 @@ export default function Navbar() {
   // NUEVO: Estado para controlar todo el menú en teléfonos
   const [menuMovilAbierto, setMenuMovilAbierto] = useState(false);
 
+  const openConsole = () => {
+    window.dispatchEvent(new CustomEvent("toggle-command-palette"));
+  };
+
   // Bloquear el scroll del cuerpo cuando el menú móvil está abierto
   useEffect(() => {
     if (menuMovilAbierto) {
@@ -38,13 +42,14 @@ export default function Navbar() {
       {/* =========================================
           MENÚ DE ESCRITORIO (Oculto en móviles)
           ========================================= */}
-      <div className="hidden md:flex gap-10 font-sans font-semibold text-sm text-zinc-300 items-center uppercase tracking-widest">
+      <div className="hidden md:flex gap-8 items-center uppercase tracking-widest select-none">
         <div className="relative">
           <button
             onClick={() => setMenuServiciosAbierto(!menuServiciosAbierto)}
-            className="px-5 py-2 rounded-full hover:bg-[#E61C8C]/10 hover:text-[#FF5C33] hover:shadow-[0_0_15px_rgba(230,28,140,0.2)] transition-all focus:outline-none flex items-center gap-2 font-sans font-semibold text-sm uppercase tracking-widest"
-          >            Servicios
-            <span className={`text-[10px] transition-transform duration-300 ${menuServiciosAbierto ? 'rotate-180 text-[#FF5C33]' : ''}`}>
+            className="px-4 py-1.5 rounded-full hover:bg-white/5 border border-transparent hover:border-[#E61C8C]/20 hover:text-white transition-all duration-300 focus:outline-none flex items-center gap-2 font-mono font-bold text-xs cursor-pointer"
+          >
+            <span>Servicios</span>
+            <span className={`text-[9px] transition-transform duration-300 ${menuServiciosAbierto ? 'rotate-180 text-fucsia-lab' : 'text-zinc-500'}`}>
               ▼
             </span>
           </button>
@@ -56,43 +61,61 @@ export default function Navbar() {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 15, scale: 0.95 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
-                className="absolute top-full left-0 mt-6 w-64 bg-[#000000]/95 backdrop-blur-2xl border border-[#FF5C33]/30 rounded-2xl shadow-[0_15px_40px_rgba(255,92,51,0.15)] overflow-hidden flex flex-col z-50"
+                className="absolute top-full left-0 mt-4 w-60 bg-[#000000]/95 backdrop-blur-2xl border border-[#E61C8C]/25 rounded-2xl shadow-[0_10px_30px_rgba(230,28,140,0.1)] overflow-hidden flex flex-col z-50 font-mono text-xs text-zinc-400"
               >
-                <Link href="/#desarrollo-web" className="px-6 py-4 hover:bg-gradient-to-r hover:from-[#E61C8C]/20 hover:to-transparent hover:text-white hover:pl-8 transition-all duration-300 border-b border-white/5" onClick={() => setMenuServiciosAbierto(false)}>
-                  Páginas web
+                <Link href="/#desarrollo-web" className="px-5 py-3.5 hover:bg-gradient-to-r hover:from-fucsia-lab/10 hover:to-transparent hover:text-white hover:pl-6 transition-all duration-300 border-b border-white/5" onClick={() => setMenuServiciosAbierto(false)}>
+                  // PÁGINAS_WEB
                 </Link>
-                <Link href="/#reparacion-pc" className="px-6 py-4 hover:bg-gradient-to-r hover:from-[#A3249E]/20 hover:to-transparent hover:text-white hover:pl-8 transition-all duration-300 border-b border-white/5" onClick={() => setMenuServiciosAbierto(false)}>
-                  Reparación de PC
+                <Link href="/#reparacion-pc" className="px-5 py-3.5 hover:bg-gradient-to-r hover:from-violeta-lab/10 hover:to-transparent hover:text-white hover:pl-6 transition-all duration-300 border-b border-white/5" onClick={() => setMenuServiciosAbierto(false)}>
+                  // SOPORTE_PC
                 </Link>
-                <Link href="/#publicidad" className="px-6 py-4 hover:bg-gradient-to-r hover:from-[#FF5C33]/20 hover:to-transparent hover:text-white hover:pl-8 transition-all duration-300" onClick={() => setMenuServiciosAbierto(false)}>
-                  Publicidad e impresión
+                <Link href="/#publicidad" className="px-5 py-3.5 hover:bg-gradient-to-r hover:from-naranja-lab/10 hover:to-transparent hover:text-white hover:pl-6 transition-all duration-300" onClick={() => setMenuServiciosAbierto(false)}>
+                  // PUBLICIDAD
                 </Link>
               </motion.div>
             )}
           </AnimatePresence>
         </div>
 
-        <Link href="/#proyectos" className="hover:text-[#E61C8C] transition-colors">
-          Proyectos
+        <Link href="/#proyectos" className="text-xs font-mono font-bold text-zinc-400 hover:text-white transition-colors relative py-1 group">
+          <span>Proyectos</span>
+          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-fucsia-lab group-hover:w-full transition-all duration-300 shadow-[0_0_8px_#E61C8C]" />
         </Link>
-        <Link href="/#enlaces" className="hover:text-[#A3249E] transition-colors">
-          Enlaces
+        <Link href="/#enlaces" className="text-xs font-mono font-bold text-zinc-400 hover:text-white transition-colors relative py-1 group">
+          <span>Enlaces</span>
+          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-violeta-lab group-hover:w-full transition-all duration-300 shadow-[0_0_8px_#A3249E]" />
         </Link>
-        <Link href="/#contacto" className="px-5 py-2 rounded-full hover:bg-[#FF5C33]/10 hover:text-[#FF5C33] hover:shadow-[0_0_15px_rgba(255,92,51,0.2)] transition-all">
+        <Link href="/#contacto" className="px-4 py-1.5 rounded-full border border-naranja-lab/20 hover:border-naranja-lab/50 hover:bg-naranja-lab/5 text-zinc-300 hover:text-white hover:shadow-[0_0_15px_rgba(255,92,51,0.2)] transition-all duration-300 font-mono font-bold text-xs">
           Contacto
         </Link>
+        <button
+          onClick={openConsole}
+          className="flex items-center gap-1.5 px-4 py-1.5 bg-white/5 border border-white/10 rounded-full hover:border-[#E61C8C]/50 hover:bg-[#E61C8C]/5 hover:text-white hover:shadow-[0_0_15px_rgba(230,28,140,0.2)] transition-all cursor-pointer text-xs font-mono font-bold"
+        >
+          <span>CONSOLA</span>
+          <kbd className="px-1 py-0.5 bg-white/10 rounded text-[9px] font-mono border border-white/10 hidden lg:inline-block">Ctrl+K</kbd>
+        </button>
       </div>
 
       {/* =========================================
-          BOTÓN HAMBURGUESA (Solo visible en móviles)
+          BOTÓN HAMBURGUESA / CONSOLA (Móviles)
           ========================================= */}
-      <button
-        className="md:hidden text-zinc-300 hover:text-[#FF5C33] transition-colors focus:outline-none"
-        onClick={() => setMenuMovilAbierto(!menuMovilAbierto)}
-      >
-        {/* Si está abierto muestra una "X", si está cerrado muestra las 3 rayas */}
-        {menuMovilAbierto ? <X size={28} /> : <Menu size={28} />}
-      </button>
+      <div className="flex items-center gap-3 md:hidden">
+        <button
+          onClick={openConsole}
+          className="flex items-center justify-center p-2 rounded-lg bg-white/5 border border-white/10 text-fucsia-lab hover:bg-white/10 transition-colors cursor-pointer"
+          aria-label="Consola de comandos"
+        >
+          <span className="font-mono text-xs font-black">&gt;_</span>
+        </button>
+        <button
+          className="text-zinc-300 hover:text-[#FF5C33] transition-colors focus:outline-none"
+          onClick={() => setMenuMovilAbierto(!menuMovilAbierto)}
+        >
+          {/* Si está abierto muestra una "X", si está cerrado muestra las 3 rayas */}
+          {menuMovilAbierto ? <X size={28} /> : <Menu size={28} />}
+        </button>
+      </div>
 
       {/* =========================================
           MENÚ DESPLEGABLE MÓVIL
